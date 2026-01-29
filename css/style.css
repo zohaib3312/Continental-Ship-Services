@@ -443,7 +443,7 @@
                  box-shadow: none;
                  background: #f8f9fa;
                  border-radius: 0;
-                 overflow: scroll;
+                 overflow: scroll !important;
                  transition: all 0.4s ease;
                  transform: translateY(-10px);
                  display: flex;
@@ -464,6 +464,7 @@
                  max-height: 600px;
                  transform: translateY(0);
                  padding: 10px 0;
+                 
              }
 
              .nav-item.dropdown-open .dropdown-arrow {
@@ -484,10 +485,12 @@
                  border-bottom: 1px solid #e5e7eb;
                  padding: 10px 0;
                  
+                 
              }
 
              .dropdown-column:last-child {
                  border-bottom: none;
+                 
              }
 
              .dropdown-title {
