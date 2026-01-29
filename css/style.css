@@ -332,6 +332,7 @@
                  grid-template-columns: repeat(3, 1fr);
                  gap: 20px;
                  padding: 25px;
+                 overflow: scroll;
              }
 
              .dropdown-column:last-child {
@@ -346,6 +347,7 @@
                  min-width: 600px;
                  grid-template-columns: repeat(2, 1fr);
                  gap: 20px;
+                 overflow: scroll;
              }
 
              .dropdown-column:last-child {
