@@ -443,7 +443,7 @@
                  box-shadow: none;
                  background: #f8f9fa;
                  border-radius: 0;
-                 overflow: hidden;
+                 overflow: scroll;
                  transition: all 0.4s ease;
                  transform: translateY(-10px);
                  display: flex;
@@ -483,6 +483,7 @@
                  gap: 0;
                  border-bottom: 1px solid #e5e7eb;
                  padding: 10px 0;
+                 
              }
 
              .dropdown-column:last-child {
