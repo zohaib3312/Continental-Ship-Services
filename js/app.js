@@ -1,4 +1,4 @@
-// ---------------------------------------Navbar functionality -----------------------------------------------------------------
+  // ---------------------------------------Navbar functionality -----------------------------------------------------------------
 // Get navbar elements
 const navbar = document.getElementById('navbar');
 const hamburger = document.getElementById('hamburger');
@@ -7,11 +7,18 @@ const mobileOverlay = document.getElementById('mobileOverlay');
 const dropdownParent = document.querySelector('.dropdown-item-parent');
 const locationsDropdown = document.getElementById('locationsDropdown');
 
+// Track if we're on mobile
+let isMobile = window.innerWidth <= 768;
+
 // Function to close mobile menu
 function closeMobileMenu() {
     hamburger.classList.remove('active');
     navMenu.classList.remove('active');
     mobileOverlay.classList.remove('active');
+    // Close any open dropdowns when closing mobile menu
+    if (dropdownParent) {
+        dropdownParent.classList.remove('dropdown-open');
+    }
     document.body.style.overflow = '';
 }
 
@@ -23,7 +30,7 @@ function openMobileMenu() {
     document.body.style.overflow = 'hidden';
 }
 
-// Add scroll event listener
+// Add scroll event listener for navbar background change
 window.addEventListener('scroll', function () {
     if (window.scrollY > 50) {
         navbar.classList.add('scrolled');
@@ -33,59 +40,95 @@ window.addEventListener('scroll', function () {
 });
 
 // Hamburger menu toggle
-hamburger.addEventListener('click', function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (navMenu.classList.contains('active')) {
-        closeMobileMenu();
-    } else {
-        openMobileMenu();
-    }
-});
+if (hamburger) {
+    hamburger.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (navMenu.classList.contains('active')) {
+            closeMobileMenu();
+        } else {
+            openMobileMenu();
+        }
+    });
+}
 
 // Close menu when overlay is clicked
-mobileOverlay.addEventListener('click', function () {
-    closeMobileMenu();
-});
+if (mobileOverlay) {
+    mobileOverlay.addEventListener('click', function () {
+        closeMobileMenu();
+    });
+}
 
-// Mobile dropdown toggle - works on all devices
-function setupDropdown() {
-    // Remove any existing event listeners
-    const newLocationsDropdown = locationsDropdown.cloneNode(true);
-    locationsDropdown.parentNode.replaceChild(newLocationsDropdown, locationsDropdown);
+// Mobile dropdown toggle functionality
+function initMobileDropdown() {
+    if (!locationsDropdown || !dropdownParent) return;
 
-    // Get the new element
-    const dropdown = document.getElementById('locationsDropdown');
-    const parent = dropdown.closest('.dropdown-item-parent');
+    isMobile = window.innerWidth <= 768;
 
-    if (window.innerWidth <= 768) {
-        dropdown.style.cursor = 'pointer';
-
-        // Add click event for mobile
-        dropdown.addEventListener('click', function (e) {
+    if (isMobile) {
+        // Mobile: Click to toggle dropdown
+        locationsDropdown.addEventListener('click', function (e) {
             e.preventDefault();
             e.stopPropagation();
-            parent.classList.toggle('dropdown-open');
+            
+            // Toggle the dropdown-open class
+            dropdownParent.classList.toggle('dropdown-open');
+            
+            console.log('Dropdown toggled:', dropdownParent.classList.contains('dropdown-open'));
         });
-
-        // Add touch event for better mobile support
-        dropdown.addEventListener('touchstart', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            parent.classList.toggle('dropdown-open');
-        }, { passive: false });
     } else {
-        dropdown.style.cursor = 'default';
-        parent.classList.remove('dropdown-open');
+        // Desktop: Remove mobile class if it exists
+        dropdownParent.classList.remove('dropdown-open');
     }
 }
 
- // Smooth scroll for navigation links
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    initMobileDropdown();
+});
+
+// Handle window resize
+let resizeTimer;
+window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+        const wasNotMobile = !isMobile;
+        isMobile = window.innerWidth <= 768;
+        
+        // If we switched from desktop to mobile or vice versa, reinitialize
+        if ((wasNotMobile && isMobile) || (!wasNotMobile && !isMobile)) {
+            initMobileDropdown();
+        }
+        
+        // Close mobile menu if resizing to desktop
+        if (window.innerWidth > 768) {
+            closeMobileMenu();
+        }
+    }, 250);
+});
+
+// Smooth scroll for navigation links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
+        const href = this.getAttribute('href');
+        
+        // Skip if it's just "#" 
+        if (href === '#') {
+            e.preventDefault();
+            return;
+        }
+        
+        // For dropdown items, just close the menu
+        if (this.classList.contains('dropdown-item')) {
+            e.preventDefault();
+            closeMobileMenu();
+            return;
+        }
+        
+        const target = document.querySelector(href);
+        
         if (target) {
+            e.preventDefault();
             // Close mobile menu if open
             closeMobileMenu();
 
@@ -99,6 +142,33 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         }
     });
 });
+
+// Prevent dropdown from closing when clicking inside it on mobile
+if (dropdownParent) {
+    const dropdownMenu = dropdownParent.querySelector('.dropdown-menu');
+    if (dropdownMenu) {
+        dropdownMenu.addEventListener('click', function (e) {
+            // Only stop propagation on mobile
+            if (isMobile) {
+                e.stopPropagation();
+            }
+        });
+    }
+}
+
+// Close dropdown when clicking outside on mobile
+document.addEventListener('click', function (e) {
+    if (isMobile && dropdownParent && !dropdownParent.contains(e.target)) {
+        dropdownParent.classList.remove('dropdown-open');
+    }
+});
+
+// Prevent body scroll when mobile menu is open
+window.addEventListener('touchmove', function(e) {
+    if (navMenu.classList.contains('active') && !navMenu.contains(e.target)) {
+        e.preventDefault();
+    }
+}, { passive: false });
 
 // ------------navbar end  -------------------------------------------------------------------------------------------------------------------
 
