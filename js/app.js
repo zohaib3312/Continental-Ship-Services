@@ -30,14 +30,6 @@ function openMobileMenu() {
     document.body.style.overflow = 'hidden';
 }
 
-// Add scroll event listener for navbar background change
-window.addEventListener('scroll', function () {
-    if (window.scrollY > 50) {
-        navbar.classList.add('scrolled');
-    } else {
-        navbar.classList.remove('scrolled');
-    }
-});
 
 // Hamburger menu toggle
 if (hamburger) {
