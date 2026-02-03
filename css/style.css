@@ -539,6 +539,12 @@
              .nav-menu {
                  width: 260px;
              }
+
+              .logo {
+                 width: 70px;
+                 height: 70px;
+             }
+
          }
 
 
